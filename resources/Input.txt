@@ -1,0 +1,28 @@
+int f() {
+    float[] temp = {1.2, 1e2, .1E2};
+    return 200;
+}
+
+int main() {
+    /* Init */
+    int main;
+    int i = 1;
+
+    main = f();
+    if(i != 2) boolean temp = true;
+    putStringLn("Test string");
+    putIntLn(i);
+    {
+        while(true)
+        {
+            int i = 2;
+            int main;
+            int f;
+            main = f = 100;
+            putIntLn(i);
+            putIntLn(main);
+            putIntLn(f);
+        }
+    }
+    putIntLn(main);
+}

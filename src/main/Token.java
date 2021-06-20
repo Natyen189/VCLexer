@@ -16,11 +16,11 @@ public class Token extends Symbol {
     public String toString() {
         if(this.value != null)
             return "Token{ "
-            + "Type=" + main.sym.terminalNames[this.sym]
+            + "Type=" + main.cup.VCParserSym.terminalNames[this.sym]
             + ", Value = " + this.value + " }";
 
         else
             return "Token{ "
-            + "Type=" + main.sym.terminalNames[this.sym] + "}";
+            + "Type=" + main.cup.VCParserSym.terminalNames[this.sym] + "}";
     }
 }

@@ -1,0 +1,178 @@
+// CUP specification for a simple expression evaluator (no actions)
+package main.cup;
+
+import java_cup.runtime.*;
+import main.jflex.LexerScanner;
+
+class VCParser;
+
+parser code {:
+    // Connect this parser to a scanner!
+    LexerScanner lexer;
+
+    public VCParser(LexerScanner lex, ComplexSymbolFactory sf) {
+        super(lex,sf);
+        lexer = lex;
+    }
+:}
+
+/* define how to connect to the scanner! */
+scan with {: return lexer.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+/* Brack (), Brace [], TriBrace {} */
+terminal Keyword            BOOLEAN, BREAK, CONTINUE, ELSE, FOR, FLOAT, IF, INT, RETURN, VOID, WHILE;
+terminal Identifier         IDENTIFIER;
+terminal Operators          PLUS, SUBTRACT, MULTIPLY, DIVIDE, LESS, LESSEQ, MORE, MOREEQ, EQ, EQEQ, NOTEQ, OR, AND, NOT;
+terminal Separator          COMMA, SEMI, LBRACE, RBRACE, LBRACK, RBRACK, LTRIBRACE, RTRIBRACE;
+terminal Comment            COMMENT;
+terminal Literal            INTEGERLITERAL, FLOATLITERAL, BOOLEANLITERAL, STRINGLITERAL, ARRAY;
+
+/* Non terminals */
+non terminal            arg, arg_list, expr, expr_list, para_decl, para_list;
+non terminal            primary_expr, unary_expr, multiplicative_expr;
+non terminal            additive_expr, rel_expr, equality_expr, cond_and_expr, cond_or_expr, assigment_expr;
+non terminal            type, identifier, declarator, initialiser, init_declarator, init_declarator_list, var_decl, func_decl, program;
+non terminal            expr_stmt, return_stmt, continue_stmt, break_stmt, while_stmt, for_stmt, if_stmt, stmt, compound_stmt;
+
+/* Precedences */
+precedence left PLUS, SUBTRACT;
+precedence left MULTIPLY, DIVIDE;
+precedence left EQ, NOTEQ, LESS, MORE, LESSEQ, MOREEQ, EQEQ, AND;
+precedence left COMMA;
+
+/* The grammar */
+arg ::= expr;
+
+arg_list ::=  LBRACK RBRACK
+              |
+              LBRACK arg_list COMMA arg RBRACK
+              ;
+
+para_decl ::= type declarator;
+
+para_list ::= LBRACK RBRACK
+              |
+              LBRACK para_list COMMA para_decl RBRACK
+              ;
+
+primary_expr ::= identifier expr_list
+                 | identifier LBRACE expr RBRACE
+                 | LBRACK expr RBRACK
+                 | INTEGERLITERAL
+                 | FLOATLITERAL
+                 | BOOLEANLITERAL
+                 | STRINGLITERAL
+                 ;
+
+unary_expr ::= PLUS unary_expr
+               | SUBTRACT unary_expr
+               | NOT unary_expr
+               | primary_expr
+               ;
+
+multiplicative_expr ::= unary_expr
+                        | multiplicative_expr MULTIPLY unary_expr
+                        | multiplicative_expr DIVIDE unary_expr
+                        ;
+
+additive_expr ::= multiplicative_expr
+                  | additive_expr PLUS multiplicative_expr
+                  | additive_expr SUBTRACT multiplicative_expr
+                  ;
+
+rel_expr ::= additive_expr
+             | rel_expr LESS additive_expr
+             | rel_expr LESSEQ additive_expr
+             | rel_expr MORE additive_expr
+             |rel_expr MOREEQ additive_expr
+             ;
+
+equality_expr ::= rel_expr
+                  | equality_expr EQEQ rel_expr
+                  | equality_expr NOTEQ rel_expr
+                  ;
+
+cond_and_expr ::= equality_expr
+                  | cond_and_expr AND equality_expr
+                  ;
+
+cond_or_expr ::= cond_and_expr
+                 | cond_or_expr OR cond_and_expr
+                 ;
+
+assigment_expr ::= cond_or_expr EQ cond_or_expr;
+
+expr ::= assigment_expr
+        ;
+
+expr_list ::= expr_list COMMA expr
+              | expr
+              ;
+
+expr_stmt ::= SEMI
+              | expr SEMI
+              ;
+
+return_stmt ::= RETURN SEMI
+                | RETURN expr SEMI
+                ;
+
+continue_stmt ::= CONTINUE SEMI
+                | CONTINUE expr SEMI
+                ;
+
+break_stmt ::= BREAK SEMI
+              | BREAK expr SEMI
+              ;
+
+while_stmt ::= WHILE LBRACK expr RBRACK
+               ;
+
+for_stmt ::= FOR LBRACK expr SEMI expr SEMI expr RBRACK stmt;
+
+if_stmt ::= IF LBRACK expr RBRACK stmt
+            | IF LBRACK expr RBRACK stmt ELSE stmt
+            ;
+
+stmt ::= compound_stmt
+         | if_stmt
+         | for_stmt
+         | while_stmt
+         | break_stmt
+         | continue_stmt
+         | return_stmt
+         |expr_stmt
+         ;
+
+compound_stmt ::= LTRIBRACE compound_stmt RTRIBRACE
+                  | LTRIBRACE var_decl stmt RTRIBRACE;
+
+identifier ::= IDENTIFIER;
+
+type ::= VOID | BOOLEAN | INT | FLOAT;
+
+initialiser ::= expr
+                | LTRIBRACE expr_list RTRIBRACE
+                ;
+
+declarator ::= identifier
+               | identifier LBRACE LBRACE
+               | identifier LBRACE INTEGERLITERAL LBRACE
+               ;
+
+init_declarator ::= declarator
+                    | declarator LBRACK EQ initialiser RBRACK
+                    ;
+
+init_declarator_list ::= init_declarator_list COMMA init_declarator
+                         |init_declarator;
+
+var_decl ::= type init_declarator_list SEMI;
+
+func_decl ::= type identifier para_list compound_stmt;
+
+program ::= func_decl
+            | var_decl
+            ;
+

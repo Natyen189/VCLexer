@@ -14,11 +14,11 @@
         
     - Trong folder `src/main/cup`:
       
-        - `ParserGenerator.cup`: File chứa định nghĩa các ký tự terminal, non-terminal và các luật syntax của ngông ngữ VC.
+        - `ParserGenerator.cup`: File chứa định nghĩa các ký tự terminal, non-terminal và các luật syntax của ngôn ngữ VC.
         
         - `VCParser.java`: File được sinh ra tự động sau khi biên dịch file `ParserGenerator.cup`.
         
-        - `VCParserSym.java`: File được sinh ra tự động, chứa giá trị trả về của các terminal được định nghĩa trong fule `ParserGenerator.cup`.
+        - `VCParserSym.java`: File được sinh ra tự động, chứa giá trị trả về của các terminal được định nghĩa trong file `ParserGenerator.cup`.
     
     - Trong folder `src/main/jflex`:
    
